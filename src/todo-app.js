@@ -1,80 +1,103 @@
-// - kebab case naudojamas ant js, _ snake case naudojamas html
-
 'use strict';
 
 class TodoApp extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {items: [], text: ''};                 //items pradzia tuscias masyvas, text laukas tuscias
-        this.handleChange = this.handleChange.bind(this);     // eventai kaip onclick| .bind(this) reikalingi, kad nepamestu savo scope
+        var temp = window.data.slice();
+        this.state = {items: temp, text: ''};
+        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     render() {
         return React.createElement(
             "div",
-            null, //divas neturi pradzioje jokios info
-            React.createElement(  //createElment galima deti belekiek
+            null,
+            React.createElement(
                 "h3",
                 null,
                 "TODO"
             ),
             React.createElement(TodoList, {
                 items: this.state.items,
-                deleteItem: this.handleDelete.bind(this)}),  //kuria to-do lista
-            React.createElement (
-            "form",
-            {onSubmit: this.handleSubmit},  //onsubmit=onclick
+                deleteItem: this.handleDelete.bind(this)
+            }),
             React.createElement(
-                "label",
-                {htmlFor: "new-todo"},
-                "What needs to be done?"
-            ),
-            React.createElement(
-                "input",
-                {
+                "form",
+                {onSubmit: this.handleSubmit},
+                React.createElement(
+                    "label",
+                    {htmlFor: "new-todo"},
+                    "What needs to be done?"
+                ),
+                React.createElement("input", {
                     id: "new-todo",
                     onChange: this.handleChange,
                     value: this.state.text
                 }),
-            React.createElement(
-                "button",
-                null,
-                "Add #",
-                this.state.items.length + 1
+                React.createElement(
+                    "button",
+                    null,
+                    "Add #",
+                    this.state.items.length + 1
+                )
             )
-        )
-    );
-}
-
-handleChange(e)
-{
-    this.setState({text: e.target.value}); //nauja teksta isimena
-}
-
-handleSubmit(e)
-{
-    e.preventDefault();
-    if (!this.state.text.length) {          //patikrina ar input ne tuscias
-        return;
+        );
     }
-    const newItem = {
-        text: this.state.text,              //jeigu tekstas turi ilgi
-        id: Date.now()                      //unikalus elemento id, date.now duoda unikalu skaiciuka
-    };
-    this.setState(state => ({               //pakeicia busena
-        items: state.items.concat(newItem), //a=a+"naujasitem" concat atiduoda pakeista masyva
-        text: ''                            //nunulina input lauka
-    }));
-}
 
-handleDelete(item) {
-    var items = this.state.items;
-    var index = items.indexOf(item);
-    items.splice(index, 1);
-    this.state.items = items;
-    this.setState(state => ({
-        items: state.items
-    }));
-}
+    handleChange(e) {
+        this.setState({text: e.target.value});
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        if (!this.state.text.length) {
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: 'http://192.168.3.107:8080/item',
+            crossDomain: true,
+            dataType: 'json',
+            data: {
+                title: this.state.text,
+                done: 0,
+                user: "CocaCola"
+            },
+
+            error: function (data) {
+                console.log(data);
+            },
+        }).done((data) => {
+            this.setState(state => ({
+                items: data,
+                text: ''
+            }));
+        });
+
+        const newItem = {
+            title: this.state.text,
+            done: 0,
+            user: "Overlord"
+        };
+
+
+    }
+
+    handleDelete(item) {
+        $.ajax({
+            type: 'DELETE',
+            url: 'http://192.168.3.107:8080/item/' + item.id,
+            crossDomain: true,
+            dataType: 'json',
+            error: function (data) {
+                console.log(data);
+            },
+        }).done((data) => {
+            this.setState(state => ({
+                items: data,
+                text: ''
+            }));
+        });
+    }
 }
