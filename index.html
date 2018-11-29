@@ -6,25 +6,28 @@
 <head>
     <meta charset="UTF-8">
     <title>React To-Do</title>
+
+
+
+    <!-- Load React. -->
+    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+    <!-- crossorigin-idedant turini is kito internetinio psl-->
+
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
+    <!-- Load our React component. -->
+    <script src="like_button.js"></script>
+
 </head>
 <body>
 
 <div id="like_button_container"></div>
 
 
-<!-- Load React. -->
-<!-- Note: when deploying, replace "development.js" with "production.min.js". -->
-<!-- crossorigin-idedant turini is kito internetinio psl-->
-
-<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
-
-<!-- Load our React component. -->
-<script src="like_button.js"></script>
-
 <script>
     const domContainer = document.querySelector('#like_button_container');
-    ReactDOM.render(e(LikeButton), domContainer);
+    ReactDOM.render(React.createElement(TodoApp, null), domContainer);
 
     <!-- Render - atvaizduok-->
     <!-- -->
